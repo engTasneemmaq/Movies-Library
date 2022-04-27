@@ -12,8 +12,8 @@ app.get("/", handleHomePage)
 app.get("/favorite", handleFavoritePage)
 
 function handleHomePage(req, res) {
-    let newRecipe = new Recipe(dataJson.title, dataJson.poster_path, dataJson.overview);
-        res.json(newRecipe);
+    let newMovie = new Movie(dataJson.title, dataJson.poster_path, dataJson.overview);
+        res.json(newMovie);
 }
 
 function handleFavoritePage(req, res) {
@@ -46,7 +46,7 @@ function handleListen(){
   }
 
 
-function Recipe(title, poster_path, overview) {
+function Movie(title, poster_path, overview) {
     this.title = title;
     this.poster_path = poster_path;
     this.overview = overview;
