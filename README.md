@@ -12,8 +12,10 @@
 
 ## Getting Started
 1.Find API
+
 2.Read documentation
+
 3.Making requests from the server
 
 ## Project Features
-Movies app
+make Movies app

@@ -104,7 +104,15 @@ function handleListen() {
     console.log(`Example app listening on port ${port}`)
 }
 
+// constrructor for handelhomepage
+function Select(title,poster_path,overview){
+    this.title=title,
+    this.poster_path=poster_path,
+    this.overview=overview
+}
 
+
+// constructor for trending
 function Movie(id,title,release_date, poster_path, overview) {
     this.id=id;
     this.title = title;
