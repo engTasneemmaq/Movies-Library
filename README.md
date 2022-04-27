@@ -5,20 +5,15 @@
 **Author Name**: Tasneem maqableh
 
 ## WRRC
-![WRRC](assest/wrrc.jpeg);
+![WRRC](assest/wrrc2.jpeg);
 
 ## Overview
-there are two pages:
-1. Home page
-2. Favorite page
+- movie library
 
 ## Getting Started
-1.npm init -y // -y means --yes
-2.create an index.js , name is optional
-3.Install express package to use itnpm install express
-4.added the server code inside index.js
-5.run the server using node index.js
+1.Find API
+2.Read documentation
+3.Making requests from the server
 
 ## Project Features
-1. Home page: included title
-2. constructor , post path and favorite page
+Movies app
