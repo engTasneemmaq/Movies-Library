@@ -28,95 +28,87 @@ function handleFavoritePage(req, res) {
     res.send("Welcome to Favorite Page");
 }
 
-function handleTrending(req,res){
-    axios.get("https://api.themoviedb.org/3/trending/all/week?api_key=37ddc7081e348bf246a42f3be2b3dfd0&language=en-US")
-        .then(result =>{
+function hendleTrendMovie(req, res) {
+    let url = `https://api.themoviedb.org/3/movie/550?apiKey=6f7fea2a73b77fb5ffeb104ba61d85d9&language=en-US?api_key=${apiKey}`;
+    axios.get(url)
+        .then(result => {
             console.log(result.data.results);
-            let Movies=result.data.results.map(Movie=>{
-                return new Movie(Movie.id,Movie.title,Movie.release_date,Movie.poster_path,Movie.overview);
-            })
+            let Movies = result.data.results.map(movie => {
+                return new Movie(movie.id, movie.title, movie.release_date, movie.poster_path, movie.overview);
+            });
             res.json(Movies);
         })
-        .catch((error)=>{
+        .catch((error) => {
             console.log(error);
-        })
-    }
+            res.send("Inside catch")
+        });
+}
 
 
-    function handleSearch(req,res){
-        let movieName=req.query.movieName;
-        let url=`https://api.themoviedb.org/3/trending/movie?query=${movieName}&api_key=37ddc7081e348bf246a42f3be2b3dfd0`;
+
+function handleSearch(req, res) {
+    let movieName = req.query.movieName;
+    let url = `https://api.themoviedb.org/3/movie/550?query=${movieName}&language=en-US?api_key=${apiKey}=6f7fea2a73b77fb5ffeb104ba61d85d9`;
+
     axios.get(url)
-        .then(result=>{
+        .then(result => {
             res.json(result.data.results);
         })
-        .catch((error)=>{
+        .catch((error) => {
             console.log(error);
-           
+
+
         })
 
-        let movieName2=req.query.movieName2;
-    let url2=`https://api.themoviedb.org/3/trending/movie?query=${movieName2}&api_key=37ddc7081e348bf246a42f3be2b3dfd0`;
-axios.get(url2)
-    .then(result=>{
-        res.json(result.data.results);
-    })
-    .catch((error)=>{
-        console.log(error);
-    })
-
-    let movieName3=req.query.recipeName3;
-    let url3=`https://api.themoviedb.org/3/trending/movie?query=${movieName3}&api_key=37ddc7081e348bf246a42f3be2b3dfd0`;
-axios.get(url3)
-    .then(result=>{
-        res.json(result.data.results);
-    })
-    .catch((error)=>{
-        console.log(error);
-    
-    })
-
-}
-    
-
-app.get('/', (req, res) => res.send('500 error'))
-
-app.use(function (err, req, res, text) {
-    res.type('text/plain')
-    res.status(500)
-    res.send('internal server error 500')
-
-});
+    let movieName2 = req.query.movieName2;
+    let url2 = `https://api.themoviedb.org/3/movie/550?query=${movieName2}&language=en-US?api_key=${apiKey}=6f7fea2a73b77fb5ffeb104ba61d85d9`;
+    axios.get(url2)
+        .then(result => {
+            res.json(result.data.results);
+        })
+        .catch((error) => {
+                console.log(error);
+            }
 
 
-app.use(function (req, res, text) {
-    res.type('text/plain')
-    res.status(404)
-    res.send('not found')
+            app.get('/', (req, res) => res.send('500 error'))
 
-});
+            app.use(function (err, req, res, text) {
+                res.type('text/plain')
+                res.status(500)
+                res.send('internal server error 500')
+
+            });
+
+
+            app.use(function (req, res, text) {
+                res.type('text/plain')
+                res.status(404)
+                res.send('not found')
+
+            });
 
 
 
-app.listen(port, handleListen)
+            app.listen(port, handleListen)
 
-function handleListen() {
-    console.log(`Example app listening on port ${port}`)
-}
+            function handleListen() {
+                console.log(`Example app listening on port ${port}`)
+            }
 
-// constrructor for handelhomepage
-function Select(title,poster_path,overview){
-    this.title=title,
-    this.poster_path=poster_path,
-    this.overview=overview
-}
+            // constrructor for handelhomepage
+            function Select(title, poster_path, overview) {
+                this.title = title,
+                    this.poster_path = poster_path,
+                    this.overview = overview
+            }
 
 
-// constructor for trending
-function Movie(id,title,release_date, poster_path, overview) {
-    this.id=id;
-    this.title = title;
-    this.release_date=release_date;
-    this.poster_path=poster_path;
-    this.overview=overview;
-}
+            // constructor for trending
+            function Movie(id, title, release_date, poster_path, overview) {
+                this.id = id;
+                this.title = title;
+                this.release_date = release_date;
+                this.poster_path = poster_path;
+                this.overview = overview;
+            }
