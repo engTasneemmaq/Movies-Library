@@ -15,7 +15,7 @@ const port = 3000;
 
 app.get("/", handleHomePage);
 app.get("/favorite", handleFavoritePage);
-app.get("/trending", handleTrending);
+app.get("/trending", hendleTrendMovie);
 app.get("/search", handleSearch);
 
 function handleHomePage(req, res) {
@@ -29,7 +29,7 @@ function handleFavoritePage(req, res) {
 }
 
 function hendleTrendMovie(req, res) {
-    let url = `https://api.themoviedb.org/3/movie/550?apiKey=6f7fea2a73b77fb5ffeb104ba61d85d9&language=en-US?api_key=${apiKey}`;
+    let url = `https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}`;
     axios.get(url)
         .then(result => {
             console.log(result.data.results);
@@ -48,28 +48,18 @@ function hendleTrendMovie(req, res) {
 
 function handleSearch(req, res) {
     let movieName = req.query.movieName;
-    let url = `https://api.themoviedb.org/3/movie/550?query=${movieName}&language=en-US?api_key=${apiKey}=6f7fea2a73b77fb5ffeb104ba61d85d9`;
-
+    let url = `https://api.themoviedb.org/3/search/movie?query=${movieName}&api_key=${apiKey}`;
     axios.get(url)
         .then(result => {
             res.json(result.data.results);
         })
         .catch((error) => {
-            console.log(error);
+            console.log(error.message);
 
 
         })
 
-    let movieName2 = req.query.movieName2;
-    let url2 = `https://api.themoviedb.org/3/movie/550?query=${movieName2}&language=en-US?api_key=${apiKey}=6f7fea2a73b77fb5ffeb104ba61d85d9`;
-    axios.get(url2)
-        .then(result => {
-            res.json(result.data.results);
-        })
-        .catch((error) => {
-                console.log(error);
-            }
-
+    }
 
             app.get('/', (req, res) => res.send('500 error'))
 
@@ -87,7 +77,7 @@ function handleSearch(req, res) {
                 res.send('not found')
 
             });
-
+        
 
 
             app.listen(port, handleListen)
