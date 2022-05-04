@@ -5,17 +5,17 @@
 **Author Name**: Tasneem maqableh
 
 ## WRRC
-![WRRC](assest/wrrc2.jpeg);
+![WRRC](./assest/image0%20(3).jpeg);
 
 ## Overview
 - movie library
 
 ## Getting Started
-1.Find API
+1. Create database
 
-2.Read documentation
+2. Create table
 
-3.Making requests from the server
+3. link database with .js file
 
 ## Project Features
 make Movies app
