@@ -1,22 +1,31 @@
 'use strict';
 
+const url = "postgres://tasneem:12345@localhost:5432/movies";
+const PORT = 3000;
 const express = require('express');
-const dataJson = require("./data.json");
-const cors = require('cors');
-const axios = require('axios').default;
+const cors = require("cors");
+const bodyParser = require('body-parser');
 require('dotenv').config();
 const apiKey = process.env.API_KEY;
 
-const app = express();
-app.use(cors());
-const port = 3000;
+const {
+    Client
+} = require('pg');
+const client = new Client(url);
+const app= express();
 
+app.use(cors());
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
 
 
 app.get("/", handleHomePage);
 app.get("/favorite", handleFavoritePage);
 app.get("/trending", hendleTrendMovie);
 app.get("/search", handleSearch);
+app.post("/addMovie",handleAddMovies);
+app.get("/getMovies",handleGetMovies);
+app.use(handleError);
 
 function handleHomePage(req, res) {
     let newMovie = new Movie(dataJson.title, dataJson.poster_path, dataJson.overview);
@@ -79,12 +88,44 @@ function handleSearch(req, res) {
             });
         
 
+            function handleAddMovies(req,res){
+                const{title,release_date,poster_path,overview}=req.body;
 
-            app.listen(port, handleListen)
+                let sql=`INSERT INTO movie(title,release_date,poster_path,overview) VALUES($1, $2, $3, $4) RETURNING *;`
+                let values=[title,release_date,poster_path,overview];
+                client.query(sql,values).then((result)=>{
+                    console.log(result.rows);
+                    return res.status(201).json(result.rows[0]);
+                }).catch((err) => {
+                    
+                });
+                }
 
-            function handleListen() {
-                console.log(`Example app listening on port ${port}`)
+                function handleGetMovies(req,res){
+
+                    let sql = 'SELECT * from movie;'
+                 client.query(sql).then((result) => {
+                     console.log(result);
+                     res.json(result.rows);
+                 }).catch((err) => {
+                     handleError(err, req, res);
+                 });
+             }
+
+             function handleError(error, req, res) {
+                res.status(500).send(error)
             }
+
+            client.connect()
+            .then(() => {
+
+                app.listen(PORT, () => {
+                    console.log(`Server is listening ${PORT}`);
+                });
+            })
+             
+
+                
 
             // constrructor for handelhomepage
             function Select(title, poster_path, overview) {
@@ -102,3 +143,5 @@ function handleSearch(req, res) {
                 this.poster_path = poster_path;
                 this.overview = overview;
             }
+
+
