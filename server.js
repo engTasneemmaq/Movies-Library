@@ -1,7 +1,7 @@
 'use strict';
 
-const url = "postgres://tasneem:12345@localhost:5432/movies";
-const PORT = 3000;
+const url = process.env.DATABASE_URL;
+const PORT = 3002;
 const express = require('express');
 const cors = require("cors");
 const bodyParser = require('body-parser');
@@ -11,21 +11,25 @@ const apiKey = process.env.API_KEY;
 const {
     Client
 } = require('pg');
-const client = new Client(url);
-const app= express();
+const client = new Client(process.env.DATABASE_URL);
+const app = express();
 
 app.use(cors());
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 app.use(bodyParser.json());
-
-
 app.get("/", handleHomePage);
 app.get("/favorite", handleFavoritePage);
 app.get("/trending", hendleTrendMovie);
 app.get("/search", handleSearch);
-app.post("/addMovie",handleAddMovies);
-app.get("/getMovies",handleGetMovies);
-app.use(handleError);
+app.post("/addMovie", handleAddMovies);
+app.get("/getMovies", handleGetMovies);
+app.get("getMovie/id", handleGetMovieByID);
+app.put("/updateMovie", handleUpdateMovie);
+app.delete("/deleteMovie", handleDeleteMovie)
+
+
 
 function handleHomePage(req, res) {
     let newMovie = new Movie(dataJson.title, dataJson.poster_path, dataJson.overview);
@@ -68,80 +72,133 @@ function handleSearch(req, res) {
 
         })
 
+}
+
+app.get('/', (req, res) => res.send('500 error'))
+
+app.use(function (err, req, res, text) {
+    res.type('text/plain')
+    res.status(500)
+    res.send('internal server error 500')
+
+});
+
+
+app.use(function (req, res, text) {
+    res.type('text/plain')
+    res.status(404)
+    res.send('not found')
+
+});
+
+
+function handleAddMovies(req, res) {
+    const {
+        title,
+        release_date,
+        poster_path,
+        overview
+    } = req.body;
+
+    let sql = `INSERT INTO movie(title,release_date,poster_path,overview) VALUES($1, $2, $3, $4) RETURNING *;`
+    let values = [title, release_date, poster_path, overview];
+    client.query(sql, values).then((result) => {
+        console.log(result.rows);
+        return res.status(201).json(result.rows[0]);
+    }).catch((err) => {
+
+    });
+}
+
+function handleGetMovies(req, res) {
+
+    let sql = 'SELECT * from movie;'
+    client.query(sql).then((result) => {
+        console.log(result);
+        res.json(result.rows);
+    }).catch((err) => {
+        handleError(err, req, res);
+    });
+}
+
+function handleError(error, req, res) {
+    res.status(500).send(error)
+}
+
+
+    function handleGetMovieByID(req,res){
+        const id = req.params.id;
+        console.log(id);
+    
+        const sql = `SELECT * FROM movie WHERE id::int=${id};`
+        client.query(sql).then(result => {
+            console.log(result);
+            res.status(200).json(result.rows);
+    
+        }).catch(error => {
+            console.log(error);
+            handleError(error, req, res);
+        })
     }
 
-            app.get('/', (req, res) => res.send('500 error'))
+    function handleUpdateMovie(req,res){
+        const {movieId} = req.query;
+        const {
+            title,
+            release_date,
+            poster_path,
+            overview
+        } = req.body;
+    
+        const sql = `UPDATE movie SET id=$1,title=$2,release_date=$3,poster_path=$4,overview=$5 WHERE id=$6 RETURNING *;`;
+        let value = [id, title,release_date,poster_path,overview ,movieId];
+        client.query(sql, value).then((result => {
+            res.send(result.rows)
+        }))
+    }
 
-            app.use(function (err, req, res, text) {
-                res.type('text/plain')
-                res.status(500)
-                res.send('internal server error 500')
+    function handleDeleteMovie(req, res) {
+        let sql = 'delete from movie WHERE id = $1;'
+        let value = ["1"]
+        client.query(sql, value).then((result =>
+            res.send("movie deleted")
+        )).catch((err =>
+            handleError(err, req, res)
+        ))
+    }
 
-            });
-
-
-            app.use(function (req, res, text) {
-                res.type('text/plain')
-                res.status(404)
-                res.send('not found')
-
-            });
-        
-
-            function handleAddMovies(req,res){
-                const{title,release_date,poster_path,overview}=req.body;
-
-                let sql=`INSERT INTO movie(title,release_date,poster_path,overview) VALUES($1, $2, $3, $4) RETURNING *;`
-                let values=[title,release_date,poster_path,overview];
-                client.query(sql,values).then((result)=>{
-                    console.log(result.rows);
-                    return res.status(201).json(result.rows[0]);
-                }).catch((err) => {
-                    
-                });
-                }
-
-                function handleGetMovies(req,res){
-
-                    let sql = 'SELECT * from movie;'
-                 client.query(sql).then((result) => {
-                     console.log(result);
-                     res.json(result.rows);
-                 }).catch((err) => {
-                     handleError(err, req, res);
-                 });
-             }
-
-             function handleError(error, req, res) {
-                res.status(500).send(error)
-            }
-
-            client.connect()
-            .then(() => {
-
-                app.listen(PORT, () => {
-                    console.log(`Server is listening ${PORT}`);
-                });
-            })
-             
-
-                
-
-            // constrructor for handelhomepage
-            function Select(title, poster_path, overview) {
-                this.title = title,
-                    this.poster_path = poster_path,
-                    this.overview = overview
-            }
+    function handleGetMovie(req, res) {
+        let sql = 'select * from movie WHERE id = $1;'
+        let value = ["6"];
+        client.query(sql, value).then((result) => {
+            res.json(result.rows);
+        }).catch((err) => {
+            handleError(err, req, res);
+        })
+    }
+    
+    client.connect().then(()=>{
+        app.listen(PORT,()=>{
+            console.log(`Server is listening ${PORT}`);
+        });
+    })
 
 
-            // constructor for trending
-            function Movie(id, title, release_date, poster_path, overview) {
-                this.id = id;
-                this.title = title;
-                this.release_date = release_date;
-                this.poster_path = poster_path;
-                this.overview = overview;
-            }
 
 
+// constrructor for handelhomepage
+function Select(title, poster_path, overview) {
+    this.title = title,
+        this.poster_path = poster_path,
+        this.overview = overview
+}
+
+
+// constructor for trending
+function Movie(id, title, release_date, poster_path, overview) {
+    this.id = id;
+    this.title = title;
+    this.release_date = release_date;
+    this.poster_path = poster_path;
+    this.overview = overview;
+}

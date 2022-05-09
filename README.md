@@ -5,17 +5,17 @@
 **Author Name**: Tasneem maqableh
 
 ## WRRC
-![WRRC](./assest/image0%20(3).jpeg);
+![WRRC](./assest/image0%20(4).jpeg);
 
 ## Overview
 - movie library
 
 ## Getting Started
-1. Create database
+1. Get favmovie with id by params.
 
-2. Create table
+2. Update (put) movies information.
 
-3. link database with .js file
+3. Delete Movies from the database.
 
 ## Project Features
 make Movies app
