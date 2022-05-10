@@ -24,10 +24,10 @@ app.get("/favorite", handleFavoritePage);
 app.get("/trending", hendleTrendMovie);
 app.get("/search", handleSearch);
 app.post("/addMovie", handleAddMovies);
-app.get("/getMovies", handleGetMovies);
-app.get("/getMovie/:id", handleGetMovieByID);
-app.put("/UPDATE/:id", handleUpdateMovie);
-app.delete("/DELETE/:id", handleDeleteMovie);
+app.get("/getAllMovies", handleGetMovies);
+app.get("/getMovie", handleGetMovieByID);
+app.put("/UPDATE/id", handleUpdateMovie);
+app.delete("/DELETE/id", handleDeleteMovie);
 
 
 
@@ -101,7 +101,7 @@ function handleAddMovies(req, res) {
         overview
     } = req.body;
 
-    let sql = `INSERT INTO movie(id,title,release_date,poster_path,overview) VALUES($1, $2, $3, $4,$5) RETURNING *;`
+    let sql = 'INSERT INTO movie(id,title,release_date,poster_path,overview) VALUES($1, $2, $3, $4,$5) ;';
     let values = [id,title, release_date, poster_path, overview];
     client.query(sql, values).then((result) => {
         console.log(result.rows);
@@ -152,7 +152,7 @@ function handleDeleteMovie(req, res) {
     const newID = req.params.id;
     let value =[newID];
 
-    const sql = `DELETE FROM movie WHERE id = $1;`
+    const sql = `DELETE FROM movie WHERE id = $5;`
     client.query(sql,value)
         .then(() => {
             return res.status(204).json([]);
@@ -164,13 +164,11 @@ function handleDeleteMovie(req, res) {
 }
 
 function handleGetMovieByID(req, res) {
-    const id = req.params.id;
-    let value =[id]
-    // console.log(id);
+   const {id}=req.query;
 
-    const sql = `SELECT * from movie where id =$6  ;`
-    client.query(sql).then(result => {
-        console.log(result);
+    const sql = 'SELECT * from movie WHERE id =$1 ;'
+    let value=[id];
+    client.query(sql,value).then(result => {
         res.status(200).json(result.rows);
 
     }).catch(error => {
