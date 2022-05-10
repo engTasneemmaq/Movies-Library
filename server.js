@@ -27,7 +27,7 @@ app.post("/addMovie", handleAddMovies);
 app.get("/getMovies", handleGetMovies);
 app.get("/getMovie/:id", handleGetMovieByID);
 app.put("/UPDATE/:id", handleUpdateMovie);
-app.delete("/DELETE/:id", handleDeleteMovie)
+app.delete("/DELETE/:id", handleDeleteMovie);
 
 
 
@@ -127,20 +127,7 @@ function handleError(error, req, res) {
 }
 
 
-function handleGetMovieByID(req, res) {
-    const id = req.params.id;
-    console.log(id);
 
-    const sql = `SELECT * FROM movie WHERE id::int=${id};`
-    client.query(sql).then(result => {
-        console.log(result);
-        res.status(200).json(result.rows);
-
-    }).catch(error => {
-        console.log(error);
-        handleError(error, req, res);
-    })
-}
 
 function handleUpdateMovie(req, res) {
     const id = req.params;
@@ -151,8 +138,8 @@ function handleUpdateMovie(req, res) {
         overview
     } = req.body;
 
-    let sql = `UPDATE recipe SET title = $1, release_date = $2, poster_path = $3, overview = $4 WHERE id::int=${id} RETURNING *;`
-    let values = [title, release_date, poster_path, overview, id];
+    let sql = `UPDATE movie SET  title = $1, release_date= $2, poster_path = $3,overview=$4 WHERE id =$5 RETURNING *;`
+    let values = [title, release_date, poster_path, overview];
     client.query(sql, values).then(data => {
         return res.status(200).json(data.rows);
     }).catch(error => {
@@ -162,10 +149,11 @@ function handleUpdateMovie(req, res) {
 
 
 function handleDeleteMovie(req, res) {
-    const id = req.params.id;
+    const newID = req.params.id;
+    let value =[newID];
 
-    const sql = `DELETE FROM movie WHERE id::int=${id};`
-    client.query(sql)
+    const sql = `DELETE FROM movie WHERE id = $1;`
+    client.query(sql,value)
         .then(() => {
             return res.status(204).json([]);
         })
@@ -177,9 +165,10 @@ function handleDeleteMovie(req, res) {
 
 function handleGetMovieByID(req, res) {
     const id = req.params.id;
-    console.log(id);
+    let value =[id]
+    // console.log(id);
 
-    const sql = `SELECT * FROM movie WHERE id::int=${id};`
+    const sql = `SELECT * from movie where id =$6  ;`
     client.query(sql).then(result => {
         console.log(result);
         res.status(200).json(result.rows);
@@ -190,11 +179,15 @@ function handleGetMovieByID(req, res) {
     })
 }
 
+
+
 client.connect().then(() => {
     app.listen(PORT, () => {
         console.log(`Server is listening ${PORT}`);
     });
 })
+
+
 
 
 
