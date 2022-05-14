@@ -1,18 +1,17 @@
 'use strict';
-
+require('dotenv').config();
 const url = process.env.DATABASE_URL;
-const PORT = 3002;
+const PORT =process.env.PORT;
 const express = require('express');
 const cors = require("cors");
 const bodyParser = require('body-parser');
-require('dotenv').config();
 const apiKey = process.env.API_KEY;
-
+const dataJson=require('./data.json')
 const {
     Client
 } = require('pg');
 // const client = new Client(process.env.DATABASE_URL);
-const client = new pg.Client({
+const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
  });
@@ -36,8 +35,9 @@ app.delete("/DELETE/id", handleDeleteMovie);
 
 
 function handleHomePage(req, res) {
-    let newMovie = new Movie(dataJson.title, dataJson.poster_path, dataJson.overview);
+    let newMovie = new Select(dataJson.title, dataJson.poster_path, dataJson.overview);
     res.json(newMovie);
+    
 }
 
 
