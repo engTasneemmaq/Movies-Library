@@ -3,6 +3,7 @@ require('dotenv').config();
 const url = process.env.DATABASE_URL;
 const PORT =process.env.PORT;
 const express = require('express');
+const axios = require('axios').default;
 const cors = require("cors");
 const bodyParser = require('body-parser');
 const apiKey = process.env.API_KEY;
@@ -45,6 +46,7 @@ function handleFavoritePage(req, res) {
     res.send("Welcome to Favorite Page");
 }
 
+console.log(apiKey)
 function hendleTrendMovie(req, res) {
     let url = `https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}`;
     axios.get(url)
@@ -55,12 +57,9 @@ function hendleTrendMovie(req, res) {
             });
             res.json(Movies);
         })
-        .catch((error) => {
-            console.log(error);
-            res.send("Inside catch")
-        });
+        .catch();
 }
-
+  
 
 
 function handleSearch(req, res) {
@@ -70,30 +69,27 @@ function handleSearch(req, res) {
         .then(result => {
             res.json(result.data.results);
         })
-        .catch((error) => {
-            console.log(error.message);
+        .catch();
+
+    }
 
 
-        })
+// app.get('/', (req, res) => res.send('500 error'))
 
-}
+// app.use(function (err, req, res, text) {
+//     res.type('text/plain')
+//     res.status(500)
+//     res.send('internal server error 500')
 
-app.get('/', (req, res) => res.send('500 error'))
-
-app.use(function (err, req, res, text) {
-    res.type('text/plain')
-    res.status(500)
-    res.send('internal server error 500')
-
-});
+// });
 
 
-app.use(function (req, res, text) {
-    res.type('text/plain')
-    res.status(404)
-    res.send('not found')
+// app.use(function (req, res, text) {
+//     res.type('text/plain')
+//     // res.status(404)
+//     // res.send('not found')
 
-});
+// });
 
 
 function handleAddMovies(req, res) {
@@ -110,9 +106,7 @@ function handleAddMovies(req, res) {
     client.query(sql, values).then((result) => {
         console.log(result.rows);
         return res.status(201).json(result.rows[0]);
-    }).catch((err) => {
-
-    });
+    }).catch();
 }
 
 function handleGetMovies(req, res) {
@@ -121,14 +115,13 @@ function handleGetMovies(req, res) {
     client.query(sql).then((result) => {
         console.log(result);
         res.json(result.rows);
-    }).catch((err) => {
-        handleError(err, req, res);
-    });
+    }).catch();
+
 }
 
-function handleError(error, req, res) {
-    res.status(500).send(error)
-}
+// function handleError(error, req, res) {
+//     res.status(500).send(error)
+// }
 
 
 
@@ -146,9 +139,7 @@ function handleUpdateMovie(req, res) {
     let values = [title, release_date, poster_path, overview];
     client.query(sql, values).then(data => {
         return res.status(200).json(data.rows);
-    }).catch(error => {
-        handleError(error, req, res);
-    })
+    }).catch()
 }
 
 
@@ -161,9 +152,8 @@ function handleDeleteMovie(req, res) {
         .then(() => {
             return res.status(204).json([]);
         })
-        .catch(error => {
-            handleError(error, req, res);
-        })
+        .catch();
+       
 
 }
 
@@ -175,10 +165,8 @@ function handleGetMovieByID(req, res) {
     client.query(sql,value).then(result => {
         res.status(200).json(result.rows);
 
-    }).catch(error => {
-        console.log(error);
-        handleError(error, req, res);
-    })
+    }).catch();
+    
 }
 
 
@@ -194,7 +182,6 @@ client.connect().then(() => {
 
 
 
-// constrructor for handelhomepage
 function Select(title, poster_path, overview) {
     this.title = title,
         this.poster_path = poster_path,
