@@ -139,10 +139,10 @@ function handleUpdateMovie(req, res) {
 
 
 function handleDeleteMovie(req, res) {
-    const newID = req.params.id;
+    const newID = req.query.id;
     let value = [newID];
 
-    const sql = `DELETE FROM movie WHERE id = $5;`
+    const sql = `DELETE FROM movie WHERE id = $1;`
     client.query(sql, value)
         .then(() => {
             return res.status(204).json([]);
