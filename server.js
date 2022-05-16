@@ -92,10 +92,10 @@ function handleError(err, req, res) {
 
 
 function handleAddMovies(req,res){
-    const{title,release_date,poster_path,overview}=req.body;
+    const{title,release_date,poster_path,overview,comment}=req.body;
 
-    let sql=`INSERT INTO movie(title,release_date,poster_path,overview) VALUES($1, $2, $3, $4) RETURNING *;`
-    let values=[title,release_date,poster_path,overview];
+    let sql=`INSERT INTO movie(title,release_date,poster_path,overview,comment) VALUES($1, $2, $3, $4,$5) RETURNING *;`
+    let values=[title,release_date,poster_path,overview,comment];
     client.query(sql,values).then((result)=>{
         console.log(result.rows);
         return res.status(201).json(result.rows[0]);
