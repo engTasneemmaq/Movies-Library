@@ -13,13 +13,6 @@ const apiKey = process.env.API_KEY;
 // const pass = process.env.PASS;
 const url = `postgres://tasneem:12345@localhost:5432/movies`;
 
-const { Client } = require('pg')
-const client = new Client(url)
-// const client = new Client({
-//   connectionString: process.env.DATABASE_URL,
-//   ssl: { rejectUnauthorized: false }
-// });
-
 // Create app:
 
 const app = express();
@@ -41,6 +34,7 @@ app.get("/getMoviesById", handleGetById);
 app.get('/', hundleHomePage);
 app.get('/trending', hundleTrending);
 app.get('/search', hundleSearch);
+
 // app.get('/error', (req, res) => res.send(error()));
 
 
@@ -100,6 +94,7 @@ function handleGetById(req, res) {
 //   res.status(500).send(error)
 // }
 
+
 // for 3rd API:
 async function hundleHomePage(req, res) {
   const url = `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=1`;
@@ -143,9 +138,6 @@ function hundleSearch(req, res) {
     })
 }
 
-
-client.connect().then(() => {
-
   app.listen(PORT, () => {
     console.log(`Server is listening ${PORT}`);
   });
@@ -159,10 +151,3 @@ client.connect().then(() => {
 //   this.overview = overview
 // }
 
-function Trend(id, title, release_date, poster_path, overview) {
-  this.id = id;
-  this.title = title;
-  this.release_date = release_date;
-  this.poster_path = poster_path;
-  this.overview = overview;
-}
